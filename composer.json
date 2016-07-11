@@ -1,0 +1,21 @@
+{
+    "name": "fuzzyma/contao-database-commands-bundle",
+    "description": "Command to update the database to reflect all changed made in the dca files",
+    "type": "symfony-bundle",
+    "require": {
+        "contao/core-bundle": "^4.2",
+        "symfony/console": "^3.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Fuzzyma\\Contao\\DatabaseCommandsBundle\\": ""
+        }
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ulrich-Matthias Schäfer",
+            "email": "ulima.ums@googlemail.com"
+        }
+    ]
+}
