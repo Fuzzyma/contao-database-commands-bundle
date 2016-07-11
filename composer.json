@@ -1,6 +1,6 @@
 {
     "name": "fuzzyma/contao-database-commands-bundle",
-    "description": "Command to update the database to reflect all changed made in the dca files",
+    "description": "Commands to update the contao database or add an admin entry",
     "type": "symfony-bundle",
     "require": {
         "contao/core-bundle": "^4.2",
