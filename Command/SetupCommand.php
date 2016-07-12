@@ -27,6 +27,12 @@ class SetupCommand extends AbstractLockedCommand
             return;
         }
 
+        $command = $this->getApplication()->find('doctrine:database:create');
+
+        if($command->run(new ArrayInput(["--if-not-exists" => true]), $output)){
+            return;
+        }
+
         $command = $this->getApplication()->find('contao:database:update');
 
         if($command->run(new ArrayInput([]), $output)){
