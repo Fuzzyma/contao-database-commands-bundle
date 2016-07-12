@@ -12,7 +12,6 @@ class DatabaseUpdateCommand extends AbstractLockedCommand
 {
     protected function configure()
     {
-
         $this
             ->setName('contao:database:update')
             ->setDescription('Updates the database to reflect all changes made in the dca files')
@@ -27,15 +26,16 @@ class DatabaseUpdateCommand extends AbstractLockedCommand
                 ),
                 new InputOption(
                     'drop', 'd', InputOption::VALUE_NONE,
-                    'Includes table and column drops'
+                    'Includes table and column drops.'
                 ),
-            ]);
+            ])
+        ;
     }
 
     protected function executeLocked(InputInterface $input, OutputInterface $output)
     {
         $dumpSql = !!$input->getOption('dump-sql');
-        $force   = !!$input->getOption('force');
+        $force = !!$input->getOption('force');
         $drop = !!$input->getOption('drop');
 
         $this->getContainer()->get('contao.framework')->initialize();
