@@ -23,19 +23,19 @@ class SetupCommand extends AbstractLockedCommand
 
         $command = $this->getApplication()->find('contao:license');
 
-        if(!$command->run(new ArrayInput([]), $output)){
+        if($command->run(new ArrayInput([]), $output)){
             return;
         }
 
         $command = $this->getApplication()->find('contao:database:update');
 
-        if(!$command->run(new ArrayInput([]), $output)){
+        if($command->run(new ArrayInput([]), $output)){
             return;
         }
 
         $command = $this->getApplication()->find('contao:database:addAdmin');
 
-        if(!$command->run(new ArrayInput([]), $output)){
+        if($command->run(new ArrayInput([]), $output)){
             return;
         }
 
