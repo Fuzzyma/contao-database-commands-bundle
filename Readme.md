@@ -2,7 +2,7 @@
 
 No need for the install tool anymore.
 This Bundle comes with a command to update the database to reflect all changed made in the dca files.
-Furthermore you can now add admin user per command!
+Furthermore you can now add admin user per command, accept the license and do the whole first setup process with one command!
 
 ## Installation
 
@@ -27,6 +27,8 @@ app/console contao:database:update --help // prints help messages
 app/console contao:database:update -d     // updates the database INCLUDING [d]rops
 app/console contao:database:addAdmin      // interactive
 app/console contao:database:addAdmin -u username -a name -m mail -p password // for the pros
+app/console contao:license // accept the license
+app/console contao:setup // do all together + creates database if not exists
 ```
 
 ## Register database updates to the composer post-update-cmd
