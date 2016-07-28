@@ -2,18 +2,27 @@
 
 namespace Fuzzyma\Contao\DatabaseCommandsBundle\Command;
 
-use Contao\CoreBundle\Command\AbstractLockedCommand;
+use Contao\CoreBundle\Framework\ContaoFramework;
+use Contao\InstallationBundle\InstallTool;
 use Patchwork\Utf8;
+use Symfony\Component\Console\Exception\RuntimeException;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 
-class DatabaseAddAdminCommand extends AbstractLockedCommand
+class DatabaseAddAdminCommand extends BaseCommand
 {
 
-    private $parameters = [];
-    private $abort = false;
+    private $locale;
+
+    public function __construct(ContaoFramework $framework, InstallTool $installTool, $locale)
+    {
+        parent::__construct($framework, $installTool);
+
+        $this->locale = $locale;
+    }
+
 
     protected function configure()
     {
@@ -26,6 +35,7 @@ class DatabaseAddAdminCommand extends AbstractLockedCommand
                 new InputOption('name', 'a', InputOption::VALUE_REQUIRED, 'Name'),
                 new InputOption('email', 'm', InputOption::VALUE_REQUIRED, 'Email'),
                 new InputOption('password', 'p', InputOption::VALUE_REQUIRED, 'Password'),
+                new InputOption('force', 'f', InputOption::VALUE_NONE | InputOption::VALUE_OPTIONAL, 'Add admin even if there is already an admin in the table')
             ));
     }
 
@@ -37,21 +47,17 @@ class DatabaseAddAdminCommand extends AbstractLockedCommand
     protected function interact(InputInterface $input, OutputInterface $output)
     {
 
-        $installTool = $this->getContainer()->get('contao.install_tool');
-
-        if (!$installTool->hasTable('tl_user')) {
-            $output->writeln('<error>Error: tl_user does not exist</error>');
-            return null;
+        if (!$this->installTool->hasTable('tl_user')) {
+            throw new RuntimeException('<error>Error: tl_user does not exist</error>', 1);
         }
 
 
         $questionHelper = $this->getHelper('question');
 
-        if ($installTool->hasAdminUser()) {
+        if ($this->installTool->hasAdminUser() && !$input->getOption('force')) {
             $question = new Question($this->getQuestion('Admin entry already present in tl_user table. Add anyway?', 'no'), 'no');
-            if ($questionHelper->ask($input, $output, $question) == 'no') {
-                $this->abort = true;
-                return;
+            if ($questionHelper->ask($input, $output, $question) !== 'yes') {
+                throw new RuntimeException('<error>Aborted: Admin entry already present in tl_user table.</error>', 2);
             }
         }
 
@@ -99,13 +105,13 @@ class DatabaseAddAdminCommand extends AbstractLockedCommand
         }
 
         $password = $input->getOption('password');
-        $minLength = $installTool->getConfig('minPasswordLength');
+        $minLength = $this->installTool->getConfig('minPasswordLength');
 
-        $question = new Question('<info>Enter a password</info>');
+        $question = new Question('<info>Enter a password:</info> ');
         $question->setValidator(function ($answer) use ($minLength, $username) {
             return $this->passwordValidator($answer, $minLength, $username);
         });
-        $question->setHidden(true);
+        // $question->setHidden(true); see symfony/symfony#19463
         $question->setMaxAttempts(3);
 
         if (!$password) {
@@ -119,42 +125,37 @@ class DatabaseAddAdminCommand extends AbstractLockedCommand
             }
         }
 
-        $this->parameters = [
-            'username' => $username,
-            'name' => $name,
-            'email' => $email,
-            'password' => $password
-        ];
+        $input->setOption('username', $username);
+        $input->setOption('name', $name);
+        $input->setOption('email', $email);
+        $input->setOption('password', $password);
 
     }
 
-    protected function executeLocked(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
 
-        if ($this->abort) return;
+        $this->framework->initialize();
 
-        $installTool = $this->getContainer()->get('contao.install_tool');
-        $this->getContainer()->get('contao.framework')->initialize();
+        $username = $input->getOption('username');
+        $name = $input->getOption('name');
+        $email = $input->getOption('email');
+        $password = $input->getOption('password');
 
-        $username = isset($this->parameters['username']) ? $this->parameters['username'] : $input->getOption('username');
-        $name = isset($this->parameters['name']) ? $this->parameters['name'] : $input->getOption('name');
-        $email = isset($this->parameters['email']) ? $this->parameters['email'] : $input->getOption('email');
-        $password = isset($this->parameters['password']) ? $this->parameters['password'] : $input->getOption('password');
-
-        $minLength = $installTool->getConfig('minPasswordLength');
+        $minLength = $this->installTool->getConfig('minPasswordLength');
 
         $this->usernameValidator($username);
         $this->emailValidator($email);
         $this->passwordValidator($password, $minLength, $username);
 
-        $installTool->persistConfig('adminEmail', $email);
+        $this->installTool->persistConfig('adminEmail', $email);
 
-        $installTool->persistAdminUser(
+        $this->installTool->persistAdminUser(
             $username,
             $name,
             $email,
             $password,
-            $this->getContainer()->getParameter('locale')
+            $this->locale
         );
 
         $output->writeln('<info>Success: Admin user added</info>');

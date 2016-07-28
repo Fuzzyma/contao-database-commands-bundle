@@ -2,14 +2,25 @@
 
 namespace Fuzzyma\Contao\DatabaseCommandsBundle\Command;
 
-use Contao\CoreBundle\Command\AbstractLockedCommand;
+use Contao\CoreBundle\Framework\ContaoFramework;
+use Contao\InstallationBundle\Database\Installer;
+use Contao\InstallationBundle\InstallTool;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 
-class DatabaseUpdateCommand extends AbstractLockedCommand
+class DatabaseUpdateCommand extends BaseCommand
 {
+
+    private $installer;
+
+    public function __construct(ContaoFramework $framework, InstallTool $installTool, Installer $installer)
+    {
+        parent::__construct($framework, $installTool);
+
+        $this->installer = $installer;
+    }
 
     protected function configure()
     {
@@ -18,21 +29,20 @@ class DatabaseUpdateCommand extends AbstractLockedCommand
             ->setName('contao:database:update')
             ->setDescription('Updates the database to reflect all changes made in the dca files')
             ->setDefinition(array(
-                new InputOption('drop', 'd', InputOption::VALUE_NONE, 'Includes table and column drops')
+                new InputOption('drop', 'd', InputOption::VALUE_NONE, 'Includes table and column drops'),
+                new InputOption('dry-run', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_NONE, 'Only print queries. Does not touch database')
             ));
     }
 
-    protected function executeLocked(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output)
     {
 
         $drop = !!$input->getOption('drop');
 
-        $this->getContainer()->get('contao.framework')->initialize();
-        $this->getContainer()->get('contao.install_tool')->handleRunOnce();
+        $this->framework->initialize();
+        $this->installTool->handleRunOnce();
 
-        $installer = $this->getContainer()->get('contao.installer');
-
-        $commands = $installer->getCommands();
+        $commands = $this->installer->getCommands();
 
         if (!$drop) {
             unset($commands['DROP']);
@@ -42,7 +52,9 @@ class DatabaseUpdateCommand extends AbstractLockedCommand
         foreach ($commands as $category) {
             foreach ($category as $hash => $sql) {
                 $output->writeln('<info>Executing Query: "' . $sql . '"</info>');
-                $installer->execCommand($hash);
+                if (!$input->getOption('dry-run')) {
+                    $this->installer->execCommand($hash);
+                }
             }
         }
 

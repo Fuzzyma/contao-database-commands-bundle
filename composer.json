@@ -18,5 +18,8 @@
             "name": "Ulrich-Matthias Schäfer",
             "email": "ulima.ums@googlemail.com"
         }
-    ]
+    ],
+    "require-dev": {
+        "phpunit/phpunit": "^5.4"
+    }
 }

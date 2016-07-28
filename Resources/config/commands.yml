@@ -1,0 +1,27 @@
+services:
+    fuzzyma.command.contao.license:
+        class: Fuzzyma\Contao\DatabaseCommandsBundle\Command\AcceptLicenseCommand
+        lazy: true
+        arguments: ["@contao.framework", "@contao.install_tool"]
+        tags:
+          - { name: console.command }
+
+    fuzzyma.command.contao.database.addAdmin:
+        class: Fuzzyma\Contao\DatabaseCommandsBundle\Command\DatabaseAddAdminCommand
+        lazy: true
+        arguments: ["@contao.framework", "@contao.install_tool", "%locale"]
+        tags:
+          - { name: console.command }
+
+    fuzzyma.command.contao.database.update:
+        class: Fuzzyma\Contao\DatabaseCommandsBundle\Command\DatabaseUpdateCommand
+        lazy: true
+        arguments: ["@contao.framework", "@contao.install_tool", "@contao.installer"]
+        tags:
+          - { name: console.command }
+
+    fuzzyma.command.contao.setup:
+        class: Fuzzyma\Contao\DatabaseCommandsBundle\Command\SetupCommand
+        lazy: true
+        tags:
+          - { name: console.command }
