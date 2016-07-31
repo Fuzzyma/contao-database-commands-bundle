@@ -31,7 +31,6 @@ class DatabaseAddAdminCommandTest extends CommandTest
         $tester->execute([]);
 
         $this->assertContains('Error: tl_user does not exist', $tester->getDisplay());
-        $this->expectException(RuntimeException::class);
     }
 
     public function testFailsIfAdminUserAlreadyPresentAndUserEntersNo()

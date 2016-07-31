@@ -9,7 +9,7 @@ services:
     fuzzyma.command.contao.database.addAdmin:
         class: Fuzzyma\Contao\DatabaseCommandsBundle\Command\DatabaseAddAdminCommand
         lazy: true
-        arguments: ["@contao.framework", "@contao.install_tool", "%locale"]
+        arguments: ["@contao.framework", "@contao.install_tool", "%locale%"]
         tags:
           - { name: console.command }
 
