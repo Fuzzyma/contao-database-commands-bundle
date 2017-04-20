@@ -34,29 +34,29 @@ The following commands are available:
 ### contao:database:update
 
 ```
-app/console contao:database:update -d        // updates the database INCLUDING [d]rops
-app/console contao:database:update --dry-run // only prints queries. database is left untouched
+bin/console contao:database:update -d        // updates the database INCLUDING [d]rops
+bin/console contao:database:update --dry-run // only prints queries. database is left untouched
 ```
 
 ### contao:database:addAdmin
 
 ```
-app/console contao:database:addAdmin // creates a new admin user interactively
-app/console contao:database:addAdmin -u username -a name -m mail -p password // for the pros
-app/console contao:database:addAdmin --force // will add admin even if admin user already present in tl_user table
+bin/console contao:database:addAdmin // creates a new admin user interactively
+bin/console contao:database:addAdmin -u username -a name -m mail -p password // for the pros
+bin/console contao:database:addAdmin --force // will add admin even if admin user already present in tl_user table
 ```
 
 ### contao:license
 
 ```
-app/console contao:license       // accept the license interactively
-app/console contao:license --yes // accept the license directly
+bin/console contao:license       // accept the license interactively
+bin/console contao:license --yes // accept the license directly
 ```
 
 ### contao:setup
 
 ```
-app/console contao:setup // do all together + creates database if not exists
+bin/console contao:setup // do all together + creates database if not exists
 ```
 
 ## Register database updates to the composer post-update-cmd
@@ -64,5 +64,5 @@ app/console contao:setup // do all together + creates database if not exists
 Just add the following to the post-update-cmd array in your composer.json:
 
 ```bash
-php app/console contao:database:update
+php bin/console contao:database:update
 ```
