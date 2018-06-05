@@ -19,6 +19,13 @@
         }
     ],
     "require-dev": {
+        "contao/manager-plugin": "^2.0",
         "phpunit/phpunit": "^5.4"
+    },
+    "conflict": {
+        "contao/manager-plugin": "<2.0 || >=3.0"
+    },
+    "extra": {
+        "contao-manager-plugin": "Fuzzyma\\Contao\\DatabaseCommandsBundle\\ContaoManager\\Plugin"
     }
 }
