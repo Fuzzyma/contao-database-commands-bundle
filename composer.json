@@ -3,7 +3,7 @@
     "description": "Commands to update the contao database or add an admin entry",
     "type": "symfony-bundle",
     "require": {
-        "symfony/console": "~2.8|~3.0",
+        "symfony/console": "~2.8 || ~3.0 || ~4.0",
         "contao/installation-bundle": ">= 1.1 < 5"
     },
     "autoload": {
